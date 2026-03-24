@@ -1,0 +1,96 @@
+@model IEnumerable<TaskManager.Web.Models.TaskItem>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Título</th>
+            <th>Prioridade</th>
+            <th>Categoria</th>
+            <th>Data de Vencimento</th>
+            <div class="row g-3">
+                @foreach (var task in Model)
+                {
+                    <div class="col-12 col-md-6">
+                        <div class="card shadow-sm h-100 border-0">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h5 class="card-title mb-0">@task.Title</h5>
+                                    @switch (task.Priority)
+                                    {
+                                        case TaskManager.Web.Models.Priority.Urgent:
+                                            <span class="badge bg-danger">Urgente</span>
+                                            break;
+                                        case TaskManager.Web.Models.Priority.High:
+                                            <span class="badge bg-warning">Alta</span>
+                                            break;
+                                        case TaskManager.Web.Models.Priority.Medium:
+                                            <span class="badge bg-info">Média</span>
+                                            break;
+                                        case TaskManager.Web.Models.Priority.Low:
+                                            <span class="badge bg-secondary">Baixa</span>
+                                            break;
+                                    }
+                                </div>
+                                <div class="mb-2">
+                                    @switch (task.Category)
+                                    {
+                                        case TaskManager.Web.Models.Category.Bug:
+                                            <span class="badge bg-danger">Bug</span>
+                                            break;
+                                        case TaskManager.Web.Models.Category.Improvement:
+                                            <span class="badge bg-primary">Melhoria</span>
+                                            break;
+                                        case TaskManager.Web.Models.Category.Feature:
+                                            <span class="badge bg-success">Funcionalidade</span>
+                                            break;
+                                        case TaskManager.Web.Models.Category.Support:
+                                            <span class="badge bg-info">Suporte</span>
+                                            break;
+                                        case TaskManager.Web.Models.Category.Work:
+                                            <span class="badge bg-secondary">Trabalho</span>
+                                            break;
+                                        case TaskManager.Web.Models.Category.Personal:
+                                            <span class="badge bg-warning text-dark">Pessoal</span>
+                                            break;
+                                        case TaskManager.Web.Models.Category.Study:
+                                            <span class="badge bg-dark">Estudo</span>
+                                            break;
+                                        case TaskManager.Web.Models.Category.Health:
+                                            <span class="badge bg-success">Saúde</span>
+                                            break;
+                                        default:
+                                            <span class="badge bg-light text-dark">Outro</span>
+                                            break;
+                                    }
+                                </div>
+                                <p class="card-text small text-muted mb-1">
+                                    <strong>Vencimento:</strong> @(task.DueDate?.ToString("dd/MM/yyyy") ?? "-")
+                                </p>
+                                <p class="card-text small text-muted mb-1">
+                                    <strong>Criação:</strong> @task.CreatedAt.ToString("dd/MM/yyyy HH:mm")<br />
+                                    <strong>Última modificação:</strong> @task.UpdatedAt.ToString("dd/MM/yyyy HH:mm")
+                                </p>
+                                <p class="card-text small text-muted mb-1">
+                                    <strong>Atribuída a:</strong> @(task.AssignedTo ?? "-")
+                                </p>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <div>
+                                        @if (task.Completed)
+                                        {
+                                            <span class="badge bg-success">Concluída</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning">Pendente</span>
+                                        }
+                                    </div>
+                                    <div>
+                                        <a asp-action="Edit" asp-route-id="@task.Id" class="btn btn-sm btn-outline-primary me-1">Editar</a>
+                                        <a asp-action="Delete" asp-route-id="@task.Id" class="btn btn-sm btn-outline-danger">Excluir</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>

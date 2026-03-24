@@ -15,9 +15,9 @@ public class TaskService : ITaskService
         _repository = repository;
     }
 
-    public async Task<IEnumerable<TaskItem>> GetAllTasksAsync()
+    public async Task<IEnumerable<TaskItem>> GetAllTasksAsync(int page = 1, int pageSize = 2, bool asc = false)
     {
-        return await _repository.GetAllAsync();
+        return await _repository.GetAllAsync(page, pageSize, asc);
     }
 
     public async Task<TaskItem?> GetTaskByIdAsync(long id)

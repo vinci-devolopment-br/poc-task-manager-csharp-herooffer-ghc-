@@ -16,9 +16,14 @@ public class TaskRepository : ITaskRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<TaskItem>> GetAllAsync()
+    public async Task<IEnumerable<TaskItem>> GetAllAsync(int page = 1, int pageSize = 2, bool asc = false)
     {
-        return await _context.Tasks.ToListAsync();
+        var query = _context.Tasks.AsQueryable();
+        query = asc ? query.OrderBy(t => t.CreatedAt) : query.OrderByDescending(t => t.CreatedAt);
+        return await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
     }
 
     public async Task<TaskItem?> GetByIdAsync(long id)

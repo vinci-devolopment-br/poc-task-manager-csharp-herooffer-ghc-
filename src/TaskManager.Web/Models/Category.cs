@@ -9,5 +9,9 @@ public enum Category
     Personal,
     Study,
     Health,
+    Bug,
+    Improvement,
+    Feature,
+    Support,
     Other
 }

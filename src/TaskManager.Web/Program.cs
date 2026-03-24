@@ -1,3 +1,4 @@
+
 using Microsoft.EntityFrameworkCore;
 using TaskManager.Web.Data;
 using TaskManager.Web.Repositories;
@@ -44,7 +45,9 @@ app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Tasks}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    pattern: "{controller=Tasks}/{action=Index}/{id?}");
 
 app.Run();
+
+// Classe marker para testes de integração
+public partial class Program { }

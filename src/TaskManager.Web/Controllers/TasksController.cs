@@ -6,6 +6,18 @@ namespace TaskManager.Web.Controllers;
 
 public class TasksController : Controller
 {
+    // GET: /Tasks/TaskListPartial
+    public async Task<IActionResult> TaskListPartial(int page = 1, string order = "desc")
+    {
+        const int pageSize = 2;
+        bool asc = order == "asc";
+        var tasks = await _taskService.GetAllTasksAsync(page, pageSize, asc);
+        var totalTasks = await _taskService.GetStatisticsAsync();
+        ViewBag.CurrentPage = page;
+        ViewBag.TotalPages = (int)Math.Ceiling((double)totalTasks.Total / pageSize);
+        ViewBag.Order = order;
+        return PartialView("_TaskListPartial", tasks);
+    }
     private readonly ITaskService _taskService;
     private readonly ILogger<TasksController> _logger;
 
@@ -16,11 +28,17 @@ public class TasksController : Controller
     }
 
     // GET: /Tasks
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(int page = 1, string order = "desc")
     {
         try
         {
-            var tasks = await _taskService.GetAllTasksAsync();
+            const int pageSize = 2;
+            bool asc = order == "asc";
+            var tasks = await _taskService.GetAllTasksAsync(page, pageSize, asc);
+            var totalTasks = await _taskService.GetStatisticsAsync();
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalTasks.Total / pageSize);
+            ViewBag.Order = order;
             return View(tasks);
         }
         catch (Exception ex)

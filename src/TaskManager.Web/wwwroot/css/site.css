@@ -1,3 +1,49 @@
+body.dark-mode {
+  background-color: #181a1b !important;
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .navbar,
+body.dark-mode .footer,
+body.dark-mode .card {
+  background-color: #23272b !important;
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .card-title,
+body.dark-mode .card-text,
+body.dark-mode .form-label,
+body.dark-mode .form-control,
+body.dark-mode .form-select,
+body.dark-mode .badge {
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .btn,
+body.dark-mode .btn-outline-primary,
+body.dark-mode .btn-outline-danger,
+body.dark-mode .btn-outline-secondary {
+  color: #e0e0e0 !important;
+  border-color: #e0e0e0 !important;
+}
+
+body.dark-mode .btn-primary,
+body.dark-mode .btn-danger {
+  background-color: #444 !important;
+  border-color: #e0e0e0 !important;
+}
+
+body.dark-mode .table,
+body.dark-mode .table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: #23272b !important;
+  color: #e0e0e0 !important;
+}
+
+body.dark-mode .pagination .page-link {
+  background-color: #23272b !important;
+  color: #e0e0e0 !important;
+  border-color: #444 !important;
+}
 html {
   font-size: 14px;
 }

@@ -7,7 +7,7 @@ namespace TaskManager.Web.Services;
 /// </summary>
 public interface ITaskService
 {
-    Task<IEnumerable<TaskItem>> GetAllTasksAsync();
+    Task<IEnumerable<TaskItem>> GetAllTasksAsync(int page = 1, int pageSize = 2, bool asc = false);
     Task<TaskItem?> GetTaskByIdAsync(long id);
     Task<TaskItem> CreateTaskAsync(TaskItem task);
     Task<TaskItem?> UpdateTaskAsync(TaskItem task);

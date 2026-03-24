@@ -7,7 +7,7 @@ namespace TaskManager.Web.Repositories;
 /// </summary>
 public interface ITaskRepository
 {
-    Task<IEnumerable<TaskItem>> GetAllAsync();
+    Task<IEnumerable<TaskItem>> GetAllAsync(int page = 1, int pageSize = 2, bool asc = false);
     Task<TaskItem?> GetByIdAsync(long id);
     Task<TaskItem> CreateAsync(TaskItem task);
     Task<TaskItem?> UpdateAsync(TaskItem task);

@@ -27,59 +27,54 @@
         <a asp-action="Create" class="btn btn-primary">Nova Tarefa</a>
     </div>
 
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Título</th>
-                <th>Prioridade</th>
-                <th>Categoria</th>
-                <th>Data de Vencimento</th>
-                <th>Atribuída a</th>
-                <th>Status</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var task in Model)
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <form id="orderForm" class="form-inline">
+                <label for="orderSelect" class="form-label me-2">Ordenar por:</label>
+                <select id="orderSelect" name="order" class="form-select d-inline w-auto">
+                    <option value="desc" selected="@(ViewBag.Order == "desc" ? "selected" : null)">Mais recentes</option>
+                    <option value="asc" selected="@(ViewBag.Order == "asc" ? "selected" : null)">Mais antigas</option>
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <div id="task-list-container">
+        @await Html.PartialAsync("_TaskListPartial", Model)
+    </div>
+
+    <nav aria-label="Paginação de tarefas">
+        <ul class="pagination justify-content-center" id="pagination-container">
+            @for (int i = 1; i <= (int)ViewBag.TotalPages; i++)
             {
-                <tr>
-                    <td>@task.Title</td>
-                    <td>
-                        @switch (task.Priority)
-                        {
-                            case TaskManager.Web.Models.Priority.Urgent:
-                                <span class="badge bg-danger">Urgente</span>
-                                break;
-                            case TaskManager.Web.Models.Priority.High:
-                                <span class="badge bg-warning">Alta</span>
-                                break;
-                            case TaskManager.Web.Models.Priority.Medium:
-                                <span class="badge bg-info">Média</span>
-                                break;
-                            case TaskManager.Web.Models.Priority.Low:
-                                <span class="badge bg-secondary">Baixa</span>
-                                break;
-                        }
-                    </td>
-                    <td>@task.Category</td>
-                    <td>@(task.DueDate?.ToString("dd/MM/yyyy") ?? "-")</td>
-                    <td>@(task.AssignedTo ?? "-")</td>
-                    <td>
-                        @if (task.Completed)
-                        {
-                            <span class="badge bg-success">Concluída</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-warning">Pendente</span>
-                        }
-                    </td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@task.Id" class="btn btn-sm btn-outline-primary">Editar</a>
-                        <a asp-action="Delete" asp-route-id="@task.Id" class="btn btn-sm btn-outline-danger">Excluir</a>
-                    </td>
-                </tr>
+                <li class="page-item @(i == (int)ViewBag.CurrentPage ? "active" : "")">
+                    <a class="page-link" href="#" data-page="@i">@i</a>
+                </li>
             }
-        </tbody>
-    </table>
+        </ul>
+    </nav>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            function loadTasks(page, order) {
+                $.get('@Url.Action("TaskListPartial", "Tasks")', { page: page, order: order }, function (data) {
+                    $('#task-list-container').html(data);
+                    // Atualiza paginação
+                    $(".pagination .page-item").removeClass("active");
+                    $(".pagination .page-link[data-page=" + page + "]").parent().addClass("active");
+                });
+            }
+            $(document).on('click', '.page-link', function (e) {
+                e.preventDefault();
+                var page = $(this).data('page');
+                var order = $('#orderSelect').val();
+                loadTasks(page, order);
+            });
+            $('#orderSelect').on('change', function () {
+                var order = $(this).val();
+                loadTasks(1, order);
+            });
+        });
+    </script>
 </div>
