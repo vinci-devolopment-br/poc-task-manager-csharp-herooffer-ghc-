@@ -21,9 +21,10 @@ builder.Services.AddScoped<ITaskService, TaskService>();
 
 var app = builder.Build();
 
-// Criar banco de dados se não existir e aplicar migrations
-using (var scope = app.Services.CreateScope())
+// Criar banco de dados se não existir e aplicar migrations (somente em Development)
+if (app.Environment.IsDevelopment())
 {
+    using var scope = app.Services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<TaskManagerDbContext>();
     dbContext.Database.EnsureCreated();
 }
