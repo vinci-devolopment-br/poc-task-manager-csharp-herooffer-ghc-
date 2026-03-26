@@ -23,7 +23,7 @@ public class TaskServiceTests
     public async Task GetAllTasksAsync_ReturnsTasks()
     {
         var tasks = new List<TaskItem> { new TaskItem { Id = 1, Title = "Test" } };
-        _repoMock.Setup(r => r.GetAllAsync()).ReturnsAsync(tasks);
+        _repoMock.Setup(r => r.GetAllAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>())).ReturnsAsync(tasks);
         var result = await _service.GetAllTasksAsync();
         Assert.Single(result);
     }

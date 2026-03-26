@@ -29,7 +29,7 @@ public class TasksControllerTests
     public async Task Index_ReturnsViewWithTasks()
     {
         var serviceMock = new Mock<ITaskService>();
-        serviceMock.Setup(s => s.GetAllTasksAsync()).ReturnsAsync(new List<TaskItem> { new TaskItem { Id = 1, Title = "T1" } });
+        serviceMock.Setup(s => s.GetAllTasksAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>())).ReturnsAsync(new List<TaskItem> { new TaskItem { Id = 1, Title = "T1" } });
         var controller = CreateControllerWithTempData(serviceMock);
         var result = await controller.Index();
         var viewResult = Assert.IsType<ViewResult>(result);
@@ -48,7 +48,7 @@ public class TasksControllerTests
     public async Task Index_WhenServiceThrows_ReturnsEmptyListAndSetsError()
     {
         var serviceMock = new Mock<ITaskService>();
-        serviceMock.Setup(s => s.GetAllTasksAsync()).ThrowsAsync(new System.Exception("fail"));
+        serviceMock.Setup(s => s.GetAllTasksAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<bool>())).ThrowsAsync(new System.Exception("fail"));
         var controller = CreateControllerWithTempData(serviceMock);
         var result = await controller.Index();
         var viewResult = Assert.IsType<ViewResult>(result);
