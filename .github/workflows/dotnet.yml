@@ -1,4 +1,4 @@
-name: .NET Build and Test
+name: .NET Build and Test + Coverage Quality Gate
 
 on:
   push:
@@ -11,13 +11,73 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '9.0.x'
+
     - name: Restore dependencies
       run: dotnet restore ./src/TaskManager.Web/TaskManager.Web.csproj
+
     - name: Build
       run: dotnet build --no-restore ./src/TaskManager.Web/TaskManager.Web.csproj
-    - name: Test
-      run: dotnet test --no-build --verbosity normal ./tests/TaskManager.Web.Tests/TaskManager.Web.Tests.csproj
+
+    - name: Restore Test dependencies
+      run: dotnet restore ./tests/TaskManager.Web.Tests/TaskManager.Web.Tests.csproj
+
+    - name: Build Tests
+      run: dotnet build --no-restore ./tests/TaskManager.Web.Tests/TaskManager.Web.Tests.csproj
+
+    - name: Run Tests with Coverage
+      run: |
+        dotnet test ./tests/TaskManager.Web.Tests/TaskManager.Web.Tests.csproj \
+          --no-build \
+          --verbosity normal \
+          --collect:"XPlat Code Coverage" \
+          --results-directory ./TestResults/ci \
+          -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura
+
+    - name: ✅ Quality Gate — Cobertura mínima 70%
+      run: |
+        COVERAGE_FILE=$(find ./TestResults/ci -name "coverage.cobertura.xml" | head -1)
+
+        if [ -z "$COVERAGE_FILE" ]; then
+          echo "❌ Arquivo de cobertura não encontrado!"
+          exit 1
+        fi
+
+        echo "📄 Arquivo de cobertura: $COVERAGE_FILE"
+
+        LINE_RATE=$(grep -oP 'line-rate="\K[0-9.]+' "$COVERAGE_FILE" | head -1)
+        COVERAGE=$(echo "$LINE_RATE * 100" | bc -l | xargs printf "%.2f")
+
+        echo ""
+        echo "════════════════════════════════════════"
+        echo "        QUALITY GATE — COBERTURA        "
+        echo "════════════════════════════════════════"
+        echo "  📊 Cobertura atual:   ${COVERAGE}%"
+        echo "  🎯 Mínimo exigido:    70.00%"
+        echo "════════════════════════════════════════"
+
+        THRESHOLD=70
+        RESULT=$(echo "$COVERAGE >= $THRESHOLD" | bc -l)
+
+        if [ "$RESULT" -ne 1 ]; then
+          echo ""
+          echo "  ❌ QUALITY GATE FALHOU!"
+          echo "  Aumente a cobertura de testes antes de fazer merge."
+          echo "════════════════════════════════════════"
+          exit 1
+        fi
+
+        echo ""
+        echo "  ✅ QUALITY GATE APROVADO!"
+        echo "════════════════════════════════════════"
+
+    - name: Upload Coverage Report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: coverage-report-${{ github.run_number }}
+        path: ./TestResults/ci/**/coverage.cobertura.xml
